@@ -1,14 +1,19 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFwJo0NgeDlRv0C8hz3LJGQP1hx-XrTWH5Ln7ATklUQAnOhNFJRoG0RUDwlwvueDBDGA/exec";
 
 const form = document.getElementById("formPendaftaran");
-const merah = document.getElementById("status-merah");
-const hijau = document.getElementById("status-hijau");
 const nikError = document.getElementById('nik-error');
 const nikSuccess = document.getElementById('nik-success');
 const loading = document.getElementById('loading');
 const nikInput = document.getElementById('nik');
+const btnPendaftaran = document.getElementById('btnPendaftaran');
+const btnCekNik = document.getElementById('btnCekNik');
+const formPendaftaran = document.getElementById('formRegistrasi');
+const formCekNik = document.getElementById('formCekNik');
+const btnSearch = document.getElementById('btn-search');
+const resultArea = document.getElementById('result');
+const searchNik = document.getElementById('search-nik');
 
-nikInput.addEventListener('input', async function() {
+nikInput.addEventListener('input', async function () {
   const nik = this.value.trim();
 
   nikError.style.display = 'none';
@@ -47,7 +52,7 @@ nikInput.addEventListener('input', async function() {
   }
 });
 
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const nik = nikInput.value.trim();
@@ -63,24 +68,20 @@ form.addEventListener("submit", async (e) => {
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
 
-  const nomorPendaftaran = "PGRI-"+Date.now().toString().slice(-6);
+  const nomorPendaftaran = "PGRI-" + Date.now().toString().slice(-6);
   data.nomor_pendaftaran = nomorPendaftaran;
-  data.timestampe = new Date().toISOString();
+  data.timestamp = new Date().toISOString();
 
   try {
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
-      headers:{
-        'Content-Type':'application/json',
-      },
       body: JSON.stringify(data)
     });
-
     const result = await response.json();
 
     if (result.success) {
-      alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${nomorPendaftaran}`);
       form.reset();
+      alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${nomorPendaftaran}`);
     } else {
       throw new Error(result.message || 'Terjadi kesalahan saat mendaftar.');
     }
@@ -89,48 +90,89 @@ form.addEventListener("submit", async (e) => {
       nikError.textContent = error.message;
       nikError.style.display = 'block';
     } else {
-      alert('❌ Terjadi kesalahan: '+error.message);
+      alert('❌ Terjadi kesalahan: ' + error.message);
     }
   } finally {
     loading.classList.add('hidden');
     submitBtn.disabled = false;
   }
-  // const data = {
-  //   nik: document.getElementById("nik").value,
-  //   nama: document.getElementById("nama").value,
-  //   pekerjaan: document.getElementById("kategori").value,
-  //   instansi: document.getElementById("instansi").value,
-  //   telepon: document.getElementById("telepon").value,
-  //   alamat: document.getElementById("alamat").value,
-  // };
-
-  // merah.classList.add("hidden");
-  // hijau.classList.remove("hidden");
-
-  // try {
-  //   const res = await fetch(SCRIPT_URL, {
-  //     method: "POST",
-  //     mode: "no-cors",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(data),
-  //   });
-
-  //   alert("✅ Pendaftaran berhasil dikirim!");
-  //   form.reset();
-  // } catch (err) {
-  //   alert("❌ Gagal mengirim data. Coba lagi nanti.");
-  //   console.error(err);
-  // }
-
-  // setTimeout(() => {
-  //   hijau.classList.add("hidden");
-  //   merah.classList.remove("hidden");
-  // }, 3000);
 });
 
-nikInput.addEventListener('keypress', function(e) {
+nikInput.addEventListener('keypress', function (e) {
   const char = String.fromCharCode(e.keyCode);
   if (!/^\d$/.test(char)) {
     e.preventDefault();
+  }
+});
+
+function setActiveTab(tab) {
+  if (tab === "pendaftaran") {
+    btnPendaftaran.classList.add("bg-green-600", "text-white");
+    btnPendaftaran.classList.remove("bg-white", "text-green-700", "border", "border-green-600");
+
+    btnCekNik.classList.add("bg-white", "text-green-700", "border", "border-green-600");
+    btnCekNik.classList.remove("bg-green-600", "text-white");
+
+    formPendaftaran.classList.remove("hidden");
+    formCekNik.classList.add("hidden");
+  } else {
+    btnCekNik.classList.add("bg-green-600", "text-white");
+    btnCekNik.classList.remove("bg-white", "text-green-700", "border", "border-green-600");
+
+    btnPendaftaran.classList.add("bg-white", "text-green-700", "border", "border-green-600");
+    btnPendaftaran.classList.remove("bg-green-600", "text-white");
+
+    formCekNik.classList.remove("hidden");
+    formPendaftaran.classList.add("hidden");
+  }
+}
+
+btnPendaftaran.addEventListener("click", () => setActiveTab("pendaftaran"));
+btnCekNik.addEventListener("click", () => setActiveTab("cek-nik"));
+
+setActiveTab("pendaftaran");
+
+// Cegah format ilmiah
+searchNik.addEventListener("input", e => {
+  e.target.value = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+});
+
+btnSearch.addEventListener("click", async () => {
+  const nik = searchNik.value.trim();
+  if (nik.length !== 16) {
+    result.innerHTML = `<p class="text-red-500 font-medium">⚠️ NIK harus 16 digit angka.</p>`;
+    return;
+  }
+
+  result.innerHTML = `<div class="flex justify-center items-center">
+        <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-green-600 mr-2"></div> Memeriksa data...
+      </div>`;
+
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=check_by_nik&nik=${nik}`);
+    console.log(res);
+    const data = await res.json();
+    console.log(data);
+
+    if (data && data.exists) {
+      const d = data.data;
+      result.innerHTML = `
+            <div class="mt-4 bg-green-50 border border-green-200 rounded-lg p-5 text-left shadow">
+              <h3 class="text-lg font-semibold text-green-700 mb-2 text-center">✅ Data Ditemukan</h3>
+              <div class="space-y-1 text-sm">
+                <p><b>Nama:</b> ${d.nama}</p>
+                <p><b>Kategori:</b> ${d.kategori}</p>
+                <p><b>Instansi:</b> ${d.instansi}</p>
+                <p><b>Telepon:</b> ${d.telepon}</p>
+                <p><b>Alamat:</b> ${d.alamat}</p>
+                <p><b>Nomor Pendaftaran:</b> <span class="font-semibold">${d.nomor_pendaftaran}</span></p>
+              </div>
+            </div>`;
+    } else {
+      result.innerHTML = `<p class="text-red-500 font-medium mt-3">❌ NIK tidak ditemukan dalam database.</p>`;
+    }
+  } catch (err) {
+    result.innerHTML = `<p class="text-red-500 font-medium">Terjadi kesalahan koneksi.</p>`;
+    console.error(err);
   }
 });
