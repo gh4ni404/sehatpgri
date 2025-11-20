@@ -13,6 +13,47 @@ const btnSearch = document.getElementById('btn-search');
 const resultArea = document.getElementById('result');
 const searchNik = document.getElementById('search-nik');
 
+// Fungsi untuk generate nomor pendaftaran
+function generateNomorPendaftaran() {
+  return "PGRI-"+Date.now().toString().slice(-6);
+}
+
+// Fungsi untuk mengecek apakah nomor Pendaftaran sudah ada
+async function checkNomorPendaftaranExists(nomorPendaftaran) {
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=check_nomor_pendaftaran&nomor_pendaftaran=${encodeURIComponent(nomorPendaftaran)}`);
+    const result = await response.json();
+    return result.exists || false;
+  } catch(error){
+    console.error('Error checking nomor pendaftaran: ', error);
+    return false;
+  }
+}
+
+// Fungsi untuk mendapatkan nomor pendaftaran yang unik
+async function getUniqueNomorPendaftaran() {
+  let nomorPendaftaran;
+  let isUnique = false;
+  let attempts = 0;
+  const maxAttempts = 5; 
+  while (!isUnique && attempts < maxAttempts) {
+    nomorPendaftaran = generateNomorPendaftaran();
+    const exists = await checkNomorPendaftaranExists(nomorPendaftaran);
+
+    if(!exists) {
+      isUnique = true;
+    } else {
+      attempts++;
+      console.log(`Nomor Pendaftaran ${nomorPendaftaran} sudah ada, mencoba lagi...`);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+  if (!isUnique) {
+    throw new Error('Gagal menghasilkan nomor pendaftaran unik setelah beberapa percobaan');
+  }
+  return nomorPendaftaran;
+}
+
 nikInput.addEventListener('input', async function () {
   const nik = this.value.trim();
 
@@ -64,11 +105,13 @@ form.addEventListener("submit", async function (e) {
 
   loading.classList.remove('hidden');
   submitBtn.disabled = true;
+  
+  const nomorPendaftaran = await getUniqueNomorPendaftaran();
 
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
 
-  const nomorPendaftaran = "PGRI-" + Date.now().toString().slice(-6);
+  // const nomorPendaftaran = "PGRI-" + Date.now().toString().slice(-6);
   data.nomor_pendaftaran = nomorPendaftaran;
   data.timestamp = new Date().toISOString();
 
@@ -150,9 +193,7 @@ btnSearch.addEventListener("click", async () => {
 
   try {
     const res = await fetch(`${SCRIPT_URL}?action=check_by_nik&nik=${nik}`);
-    console.log(res);
     const data = await res.json();
-    console.log(data);
 
     if (data && data.exists) {
       const d = data.data;
