@@ -304,23 +304,45 @@ let instansiLastFetchAt = 0;
 let instansiFetchPromise = null;
 let activeInstansiIndex = -1;
 
+const INSTANSI_ABBREV_RULES = [
+  [/\bSMK\s+(?:NEGERI|N)\b/g, 'SMKN'],
+  [/\bSMA\s+(?:NEGERI|N)\b/g, 'SMAN'],
+  [/\bSMP\s+(?:NEGERI|N)\b/g, 'SMPN'],
+  [/\bSD\s+(?:NEGERI|N)\b/g, 'SDN'],
+  [/\bSLB\s+(?:NEGERI|N)\b/g, 'SLBN'],
+  [/\bMTS\s+(?:NEGERI|N)\b/g, 'MTSN'],
+  [/\bMA\s+(?:NEGERI|N)\b/g, 'MAN'],
+  [/\bMI\s+(?:NEGERI|N)\b/g, 'MIN'],
+  [/\bSD\s+INP\b/g, 'SD INPRES']
+];
+
 function normalizeInstansi(value) {
-  return String(value || '').trim().replace(/\s+/g, ' ');
+  let text = String(value || '').trim().replace(/\s+/g, ' ').toUpperCase();
+  if (!text) return '';
+
+  text = text
+    .replace(/\b(TK|SD|SMP|SMA|SMK|SLB|MI|MTS|MA|MIN|MTSN|MAN|SDN|SMPN|SMAN|SMKN|SLBN)\./g, '$1 ')
+    .replace(/\bN\.\s*/g, 'N ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  for (const [pattern, replacement] of INSTANSI_ABBREV_RULES) {
+    text = text.replace(pattern, replacement);
+  }
+
+  return text.replace(/\s+/g, ' ').trim();
 }
 
 function insertUniqueInstansi(list, value) {
   const normalized = normalizeInstansi(value);
-  if (!normalized || normalized.toLowerCase() === 'tidak diketahui') return false;
-  if (list.some(opt => opt.toLowerCase() === normalized.toLowerCase())) return false;
+  if (!normalized || normalized === 'TIDAK DIKETAHUI') return false;
+  if (list.includes(normalized)) return false;
   list.push(normalized);
   return true;
 }
 
 function resolveInstansiValue(rawValue) {
-  const normalized = normalizeInstansi(rawValue);
-  if (!normalized) return '';
-  const match = instansiOptions.find(opt => opt.toLowerCase() === normalized.toLowerCase());
-  return match || normalized;
+  return normalizeInstansi(rawValue);
 }
 
 function addInstansiOption(value) {
@@ -349,7 +371,6 @@ function selectInstansiOption(value) {
 
 function renderInstansiDropdown(query) {
   const normalizedQuery = normalizeInstansi(query);
-  const lowerQuery = normalizedQuery.toLowerCase();
   instansiDropdown.innerHTML = '';
   activeInstansiIndex = -1;
 
@@ -361,8 +382,8 @@ function renderInstansiDropdown(query) {
     return;
   }
 
-  const filtered = lowerQuery
-    ? instansiOptions.filter(opt => opt.toLowerCase().includes(lowerQuery))
+  const filtered = normalizedQuery
+    ? instansiOptions.filter(opt => opt.includes(normalizedQuery))
     : instansiOptions;
 
   filtered.forEach(opt => {
@@ -374,7 +395,7 @@ function renderInstansiDropdown(query) {
     instansiDropdown.appendChild(li);
   });
 
-  const hasExactMatch = normalizedQuery && instansiOptions.some(opt => opt.toLowerCase() === lowerQuery);
+  const hasExactMatch = normalizedQuery && instansiOptions.includes(normalizedQuery);
   if (normalizedQuery && !hasExactMatch) {
     const li = document.createElement('li');
     li.className = 'px-3 py-2 cursor-pointer bg-green-50 hover:bg-green-100 text-green-700 font-medium border-t border-gray-100';
