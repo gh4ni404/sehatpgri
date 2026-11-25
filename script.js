@@ -297,12 +297,23 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ==================== SEARCHABLE DROPDOWN ASAL SEKOLAH ====================
+const INSTANSI_REFRESH_COOLDOWN_MS = 20000; // Refresh maksimal tiap 20 detik
 let instansiOptions = [];
 let instansiLoading = true;
+let instansiLastFetchAt = 0;
+let instansiFetchPromise = null;
 let activeInstansiIndex = -1;
 
 function normalizeInstansi(value) {
   return String(value || '').trim().replace(/\s+/g, ' ');
+}
+
+function insertUniqueInstansi(list, value) {
+  const normalized = normalizeInstansi(value);
+  if (!normalized || normalized.toLowerCase() === 'tidak diketahui') return false;
+  if (list.some(opt => opt.toLowerCase() === normalized.toLowerCase())) return false;
+  list.push(normalized);
+  return true;
 }
 
 function resolveInstansiValue(rawValue) {
@@ -313,16 +324,15 @@ function resolveInstansiValue(rawValue) {
 }
 
 function addInstansiOption(value) {
-  const normalized = normalizeInstansi(value);
-  if (!normalized || normalized.toLowerCase() === 'tidak diketahui') return;
-  const exists = instansiOptions.some(opt => opt.toLowerCase() === normalized.toLowerCase());
-  if (!exists) {
-    instansiOptions.push(normalized);
+  if (insertUniqueInstansi(instansiOptions, value)) {
     instansiOptions.sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }));
   }
 }
 
-function openInstansiDropdown() {
+function openInstansiDropdown(shouldRefresh = false) {
+  if (shouldRefresh) {
+    loadInstansiOptions();
+  }
   renderInstansiDropdown(instansiInput.value);
   instansiDropdown.classList.remove('hidden');
 }
@@ -389,31 +399,45 @@ function updateActiveInstansiHighlight(items) {
   }
 }
 
-async function loadInstansiOptions() {
-  instansiLoading = true;
-  try {
-    const response = await fetch(`${SCRIPT_URL}?action=registration_stats`);
-    const result = await response.json();
-    if (result && result.success && result.data && result.data.by_instansi) {
-      Object.keys(result.data.by_instansi).forEach(addInstansiOption);
-    }
-  } catch (error) {
-    console.error('Gagal memuat daftar asal sekolah:', error);
-  } finally {
-    instansiLoading = false;
-    if (!instansiDropdown.classList.contains('hidden')) {
-      renderInstansiDropdown(instansiInput.value);
-    }
+async function loadInstansiOptions(force = false) {
+  if (instansiFetchPromise) return instansiFetchPromise;
+  if (!force && Date.now() - instansiLastFetchAt < INSTANSI_REFRESH_COOLDOWN_MS) {
+    return;
   }
+
+  instansiLoading = true;
+  instansiFetchPromise = (async () => {
+    try {
+      const response = await fetch(`${SCRIPT_URL}?action=registration_stats`);
+      const result = await response.json();
+      if (result && result.success && result.data && result.data.by_instansi) {
+        const syncedOptions = [];
+        Object.keys(result.data.by_instansi).forEach(raw => insertUniqueInstansi(syncedOptions, raw));
+        syncedOptions.sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }));
+        instansiOptions = syncedOptions;
+        instansiLastFetchAt = Date.now();
+      }
+    } catch (error) {
+      console.error('Gagal memuat daftar asal sekolah:', error);
+    } finally {
+      instansiLoading = false;
+      instansiFetchPromise = null;
+      if (!instansiDropdown.classList.contains('hidden')) {
+        renderInstansiDropdown(instansiInput.value);
+      }
+    }
+  })();
+
+  return instansiFetchPromise;
 }
 
-instansiInput.addEventListener('focus', openInstansiDropdown);
-instansiInput.addEventListener('input', openInstansiDropdown);
+instansiInput.addEventListener('focus', () => openInstansiDropdown(true));
+instansiInput.addEventListener('input', () => openInstansiDropdown(false));
 
 instansiToggle.addEventListener('click', () => {
   if (instansiDropdown.classList.contains('hidden')) {
     instansiInput.focus();
-    openInstansiDropdown();
+    openInstansiDropdown(true);
   } else {
     closeInstansiDropdown();
   }
@@ -447,4 +471,10 @@ document.addEventListener('click', (e) => {
   }
 });
 
-loadInstansiOptions();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    loadInstansiOptions();
+  }
+});
+
+loadInstansiOptions(true);
