@@ -8,6 +8,10 @@ const loading = document.getElementById('loading');
 const nikInput = document.getElementById('nik');
 const kecamatanSelect = document.getElementById('kecamatan');
 const kecamatanError = document.getElementById('kecamatan-error');
+const instansiWrapper = document.getElementById('instansi-wrapper');
+const instansiInput = document.getElementById('instansi');
+const instansiToggle = document.getElementById('instansi-toggle');
+const instansiDropdown = document.getElementById('instansi-dropdown');
 const btnPendaftaran = document.getElementById('btnPendaftaran');
 const btnCekNik = document.getElementById('btnCekNik');
 const formPendaftaran = document.getElementById('formRegistrasi');
@@ -115,6 +119,14 @@ form.addEventListener("submit", async function (e) {
   }
   kecamatanError.style.display = 'none';
 
+  const canonicalInstansi = resolveInstansiValue(instansiInput.value);
+  if (!canonicalInstansi) {
+    instansiInput.value = '';
+    instansiInput.focus();
+    return;
+  }
+  instansiInput.value = canonicalInstansi;
+
   loading.classList.remove('hidden');
   submitBtn.disabled = true;
   
@@ -122,6 +134,7 @@ form.addEventListener("submit", async function (e) {
 
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
+  data.instansi = canonicalInstansi;
 
   // const nomorPendaftaran = "PGRI-" + Date.now().toString().slice(-6);
   data.alamat = data.alamat || "";
@@ -136,9 +149,11 @@ form.addEventListener("submit", async function (e) {
     const result = await response.json();
 
     if (result.success) {
+      addInstansiOption(canonicalInstansi);
       form.reset();
       nikSuccess.style.display = 'none';
       kecamatanError.style.display = 'none';
+      closeInstansiDropdown();
       // alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${nomorPendaftaran}`);
       alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${result.nomor_pendaftaran}`);
     } else {
@@ -280,3 +295,156 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+// ==================== SEARCHABLE DROPDOWN ASAL SEKOLAH ====================
+let instansiOptions = [];
+let instansiLoading = true;
+let activeInstansiIndex = -1;
+
+function normalizeInstansi(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ');
+}
+
+function resolveInstansiValue(rawValue) {
+  const normalized = normalizeInstansi(rawValue);
+  if (!normalized) return '';
+  const match = instansiOptions.find(opt => opt.toLowerCase() === normalized.toLowerCase());
+  return match || normalized;
+}
+
+function addInstansiOption(value) {
+  const normalized = normalizeInstansi(value);
+  if (!normalized || normalized.toLowerCase() === 'tidak diketahui') return;
+  const exists = instansiOptions.some(opt => opt.toLowerCase() === normalized.toLowerCase());
+  if (!exists) {
+    instansiOptions.push(normalized);
+    instansiOptions.sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }));
+  }
+}
+
+function openInstansiDropdown() {
+  renderInstansiDropdown(instansiInput.value);
+  instansiDropdown.classList.remove('hidden');
+}
+
+function closeInstansiDropdown() {
+  instansiDropdown.classList.add('hidden');
+  activeInstansiIndex = -1;
+}
+
+function selectInstansiOption(value) {
+  instansiInput.value = value;
+  closeInstansiDropdown();
+}
+
+function renderInstansiDropdown(query) {
+  const normalizedQuery = normalizeInstansi(query);
+  const lowerQuery = normalizedQuery.toLowerCase();
+  instansiDropdown.innerHTML = '';
+  activeInstansiIndex = -1;
+
+  if (instansiLoading && instansiOptions.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'px-3 py-2 text-gray-400 italic';
+    li.textContent = 'Memuat daftar sekolah...';
+    instansiDropdown.appendChild(li);
+    return;
+  }
+
+  const filtered = lowerQuery
+    ? instansiOptions.filter(opt => opt.toLowerCase().includes(lowerQuery))
+    : instansiOptions;
+
+  filtered.forEach(opt => {
+    const li = document.createElement('li');
+    li.className = 'px-3 py-2 cursor-pointer hover:bg-green-50 text-gray-700';
+    li.dataset.optionValue = opt;
+    li.textContent = opt;
+    li.addEventListener('click', () => selectInstansiOption(opt));
+    instansiDropdown.appendChild(li);
+  });
+
+  const hasExactMatch = normalizedQuery && instansiOptions.some(opt => opt.toLowerCase() === lowerQuery);
+  if (normalizedQuery && !hasExactMatch) {
+    const li = document.createElement('li');
+    li.className = 'px-3 py-2 cursor-pointer bg-green-50 hover:bg-green-100 text-green-700 font-medium border-t border-gray-100';
+    li.dataset.optionValue = normalizedQuery;
+    li.textContent = `+ Gunakan "${normalizedQuery}" (sekolah baru)`;
+    li.addEventListener('click', () => selectInstansiOption(normalizedQuery));
+    instansiDropdown.appendChild(li);
+  } else if (filtered.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'px-3 py-2 text-gray-400 italic';
+    li.textContent = 'Belum ada daftar sekolah, ketik nama sekolah Anda';
+    instansiDropdown.appendChild(li);
+  }
+}
+
+function updateActiveInstansiHighlight(items) {
+  items.forEach((item, idx) => {
+    item.classList.toggle('bg-green-100', idx === activeInstansiIndex);
+  });
+  if (activeInstansiIndex >= 0 && items[activeInstansiIndex]) {
+    items[activeInstansiIndex].scrollIntoView({ block: 'nearest' });
+  }
+}
+
+async function loadInstansiOptions() {
+  instansiLoading = true;
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=registration_stats`);
+    const result = await response.json();
+    if (result && result.success && result.data && result.data.by_instansi) {
+      Object.keys(result.data.by_instansi).forEach(addInstansiOption);
+    }
+  } catch (error) {
+    console.error('Gagal memuat daftar asal sekolah:', error);
+  } finally {
+    instansiLoading = false;
+    if (!instansiDropdown.classList.contains('hidden')) {
+      renderInstansiDropdown(instansiInput.value);
+    }
+  }
+}
+
+instansiInput.addEventListener('focus', openInstansiDropdown);
+instansiInput.addEventListener('input', openInstansiDropdown);
+
+instansiToggle.addEventListener('click', () => {
+  if (instansiDropdown.classList.contains('hidden')) {
+    instansiInput.focus();
+    openInstansiDropdown();
+  } else {
+    closeInstansiDropdown();
+  }
+});
+
+instansiInput.addEventListener('keydown', (e) => {
+  const items = Array.from(instansiDropdown.querySelectorAll('li[data-option-value]'));
+  if (e.key === 'Escape') {
+    closeInstansiDropdown();
+    return;
+  }
+  if (instansiDropdown.classList.contains('hidden') || items.length === 0) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    activeInstansiIndex = (activeInstansiIndex + 1) % items.length;
+    updateActiveInstansiHighlight(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    activeInstansiIndex = (activeInstansiIndex - 1 + items.length) % items.length;
+    updateActiveInstansiHighlight(items);
+  } else if (e.key === 'Enter' && activeInstansiIndex >= 0) {
+    e.preventDefault();
+    selectInstansiOption(items[activeInstansiIndex].dataset.optionValue);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!instansiWrapper.contains(e.target)) {
+    closeInstansiDropdown();
+  }
+});
+
+loadInstansiOptions();

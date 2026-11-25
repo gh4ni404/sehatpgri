@@ -88,12 +88,21 @@
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
+              <div class="relative" id="instansi-wrapper">
                 <!-- <label class="text-sm text-gray-600">Instansi/Sekolah/Kampus</label> -->
-                <label class="text-sm text-gray-600">Asal Sekolah</label>
-                <input type="text" id="instansi" name="instansi"
-                  class="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Masukkan asal sekolah" required>
+                <label for="instansi" class="text-sm text-gray-600">Asal Sekolah <span class="text-red-500">*</span></label>
+                <div class="relative">
+                  <input type="text" id="instansi" name="instansi" autocomplete="off"
+                    class="mt-1 w-full border rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Pilih atau ketik asal sekolah" required>
+                  <button type="button" id="instansi-toggle" aria-label="Tampilkan daftar sekolah"
+                    class="absolute inset-y-0 right-0 mt-1 px-2.5 flex items-center text-gray-400 hover:text-gray-600">
+                    ▾
+                  </button>
+                </div>
+                <ul id="instansi-dropdown"
+                  class="hidden absolute z-30 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg text-sm">
+                </ul>
               </div>
               <div>
                 <label class="text-sm text-gray-600">Nomor Whatsapp <span class="text-red-500">*</span></label>
