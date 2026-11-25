@@ -5,6 +5,8 @@ const nikError = document.getElementById('nik-error');
 const nikSuccess = document.getElementById('nik-success');
 const loading = document.getElementById('loading');
 const nikInput = document.getElementById('nik');
+const kecamatanSelect = document.getElementById('kecamatan');
+const kecamatanError = document.getElementById('kecamatan-error');
 const btnPendaftaran = document.getElementById('btnPendaftaran');
 const btnCekNik = document.getElementById('btnCekNik');
 const formPendaftaran = document.getElementById('formRegistrasi');
@@ -103,6 +105,15 @@ form.addEventListener("submit", async function (e) {
     return;
   }
 
+  const kecamatan = kecamatanSelect.value.trim();
+  if (!kecamatan) {
+    kecamatanError.textContent = 'Silakan pilih kecamatan terlebih dahulu.';
+    kecamatanError.style.display = 'block';
+    kecamatanSelect.focus();
+    return;
+  }
+  kecamatanError.style.display = 'none';
+
   loading.classList.remove('hidden');
   submitBtn.disabled = true;
   
@@ -124,6 +135,8 @@ form.addEventListener("submit", async function (e) {
 
     if (result.success) {
       form.reset();
+      nikSuccess.style.display = 'none';
+      kecamatanError.style.display = 'none';
       alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${nomorPendaftaran}`);
     } else {
       throw new Error(result.message || 'Terjadi kesalahan saat mendaftar.');
@@ -145,6 +158,15 @@ nikInput.addEventListener('keypress', function (e) {
   const char = String.fromCharCode(e.keyCode);
   if (!/^\d$/.test(char)) {
     e.preventDefault();
+  }
+});
+
+kecamatanSelect.addEventListener('change', function () {
+  if (this.value.trim()) {
+    kecamatanError.style.display = 'none';
+  } else {
+    kecamatanError.textContent = 'Silakan pilih kecamatan terlebih dahulu.';
+    kecamatanError.style.display = 'block';
   }
 });
 
