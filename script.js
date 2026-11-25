@@ -123,6 +123,7 @@ form.addEventListener("submit", async function (e) {
   const data = Object.fromEntries(formData);
 
   // const nomorPendaftaran = "PGRI-" + Date.now().toString().slice(-6);
+  data.alamat = data.alamat || "";
   data.nomor_pendaftaran = nomorPendaftaran;
   data.timestamp = new Date().toISOString();
 
@@ -228,7 +229,7 @@ btnSearch.addEventListener("click", async () => {
                 <p><b>Instansi:</b> ${d.instansi}</p>
                 <p><b>Telepon:</b> ${d.telepon}</p>
                 ${d.kecamatan ? `<p><b>Kecamatan:</b> ${d.kecamatan}</p>` : ''}
-                <p><b>Alamat:</b> ${d.alamat}</p>
+                ${d.alamat ? `<p><b>Alamat:</b> ${d.alamat}</p>` : ''}
                 <p><b>Nomor Pendaftaran:</b> <span class="font-semibold">${d.nomor_pendaftaran}</span></p>
               </div>
             </div>`;
