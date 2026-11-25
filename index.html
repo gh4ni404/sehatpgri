@@ -75,15 +75,16 @@
               </div>
               <div>
                 <label class="text-sm text-gray-600">Kategori Peserta <span class="text-red-500">*</span></label>
-                <select name="kategori" id="kategori"
-                  class="mt-1 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                  required disabled>
-                  <!-- <option value="" disabled selected>-- Pilih Kategori --</option> -->
-                  <option value="Guru/Dosen">Guru/Dosen</option>
+                <select id="kategori"
+                  class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none transition-all"
+                  disabled>
+                  <!-- <option value="" disabled>-- Pilih Kategori --</option> -->
+                  <option value="Guru/Dosen" selected>Guru/Dosen</option>
                   <!-- <option value="Tenaga Kependidikan">Tenaga Kependidikan</option>
                   <option value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</option>
                   <option value="Umum">Umum</option> -->
                 </select>
+                <input type="hidden" name="kategori" value="Guru/Dosen">
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
