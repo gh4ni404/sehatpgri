@@ -1,6 +1,5 @@
 // const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFwJo0NgeDlRv0C8hz3LJGQP1hx-XrTWH5Ln7ATklUQAnOhNFJRoG0RUDwlwvueDBDGA/exec";
-// const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeyMslfLamw3n1tULtwn3PNCQuQapHN130iJQOua9Ofh8D467SYM-5mAptdJWTQ6fR/exec";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFwJo0NgeDlRv0C8hz3LJGQP1hx-XrTWH5Ln7ATklUQAnOhNFJRoG0RUDwlwvueDBDGA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeyMslfLamw3n1tULtwn3PNCQuQapHN130iJQOua9Ofh8D467SYM-5mAptdJWTQ6fR/exec";
 const form = document.getElementById("formPendaftaran");
 const nikError = document.getElementById('nik-error');
 const nikSuccess = document.getElementById('nik-success');
@@ -17,45 +16,45 @@ const resultArea = document.getElementById('result');
 const searchNik = document.getElementById('search-nik');
 
 // Fungsi untuk generate nomor pendaftaran
-// function generateNomorPendaftaran() {
-//   return "PGRIBERAMAL-"+Date.now().toString().slice(-6);
-// }
+function generateNomorPendaftaran() {
+  return "PGRIBERAMAL-"+Date.now().toString().slice(-6);
+}
 
 // Fungsi untuk mengecek apakah nomor Pendaftaran sudah ada
-// async function checkNomorPendaftaranExists(nomorPendaftaran) {
-//   try {
-//     const response = await fetch(`${SCRIPT_URL}?action=check_nomor_pendaftaran&nomor_pendaftaran=${encodeURIComponent(nomorPendaftaran)}`);
-//     const result = await response.json();
-//     return result.exists || false;
-//   } catch(error){
-//     console.error('Error checking nomor pendaftaran: ', error);
-//     return false;
-//   }
-// }
+async function checkNomorPendaftaranExists(nomorPendaftaran) {
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=check_nomor_pendaftaran&nomor_pendaftaran=${encodeURIComponent(nomorPendaftaran)}`);
+    const result = await response.json();
+    return result.exists || false;
+  } catch(error){
+    console.error('Error checking nomor pendaftaran: ', error);
+    return false;
+  }
+}
 
 // Fungsi untuk mendapatkan nomor pendaftaran yang unik
-// async function getUniqueNomorPendaftaran() {
-//   let nomorPendaftaran;
-//   let isUnique = false;
-//   let attempts = 0;
-//   const maxAttempts = 5; 
-//   while (!isUnique && attempts < maxAttempts) {
-//     nomorPendaftaran = generateNomorPendaftaran();
-//     const exists = await checkNomorPendaftaranExists(nomorPendaftaran);
+async function getUniqueNomorPendaftaran() {
+  let nomorPendaftaran;
+  let isUnique = false;
+  let attempts = 0;
+  const maxAttempts = 5; 
+  while (!isUnique && attempts < maxAttempts) {
+    nomorPendaftaran = generateNomorPendaftaran();
+    const exists = await checkNomorPendaftaranExists(nomorPendaftaran);
 
-//     if(!exists) {
-//       isUnique = true;
-//     } else {
-//       attempts++;
-//       console.log(`Nomor Pendaftaran ${nomorPendaftaran} sudah ada, mencoba lagi...`);
-//       await new Promise(resolve => setTimeout(resolve, 100));
-//     }
-//   }
-//   if (!isUnique) {
-//     throw new Error('Gagal menghasilkan nomor pendaftaran unik setelah beberapa percobaan');
-//   }
-//   return nomorPendaftaran;
-// }
+    if(!exists) {
+      isUnique = true;
+    } else {
+      attempts++;
+      console.log(`Nomor Pendaftaran ${nomorPendaftaran} sudah ada, mencoba lagi...`);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+  if (!isUnique) {
+    throw new Error('Gagal menghasilkan nomor pendaftaran unik setelah beberapa percobaan');
+  }
+  return nomorPendaftaran;
+}
 
 nikInput.addEventListener('input', async function () {
   const nik = this.value.trim();
@@ -118,14 +117,14 @@ form.addEventListener("submit", async function (e) {
   loading.classList.remove('hidden');
   submitBtn.disabled = true;
   
-  // const nomorPendaftaran = await getUniqueNomorPendaftaran();
+  const nomorPendaftaran = await getUniqueNomorPendaftaran();
 
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
 
   // const nomorPendaftaran = "PGRI-" + Date.now().toString().slice(-6);
   data.alamat = data.alamat || "";
-  // data.nomor_pendaftaran = nomorPendaftaran;
+  data.nomor_pendaftaran = nomorPendaftaran;
   data.timestamp = new Date().toISOString();
 
   try {
@@ -139,8 +138,7 @@ form.addEventListener("submit", async function (e) {
       form.reset();
       nikSuccess.style.display = 'none';
       kecamatanError.style.display = 'none';
-      // alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${nomorPendaftaran}`);
-      alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${result.nomor_pendaftaran}`);
+      alert(`✅ Pendaftaran berhasil dikirim! Nomor Pendaftaran Anda: ${nomorPendaftaran}`);
     } else {
       throw new Error(result.message || 'Terjadi kesalahan saat mendaftar.');
     }
