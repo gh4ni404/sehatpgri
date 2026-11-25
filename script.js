@@ -15,7 +15,7 @@ const searchNik = document.getElementById('search-nik');
 
 // Fungsi untuk generate nomor pendaftaran
 function generateNomorPendaftaran() {
-  return "PGRI-"+Date.now().toString().slice(-6);
+  return "PGRIBERAMAL-"+Date.now().toString().slice(-6);
 }
 
 // Fungsi untuk mengecek apakah nomor Pendaftaran sudah ada
