@@ -205,6 +205,7 @@ btnSearch.addEventListener("click", async () => {
                 <p><b>Kategori:</b> ${d.kategori}</p>
                 <p><b>Instansi:</b> ${d.instansi}</p>
                 <p><b>Telepon:</b> ${d.telepon}</p>
+                ${d.kecamatan ? `<p><b>Kecamatan:</b> ${d.kecamatan}</p>` : ''}
                 <p><b>Alamat:</b> ${d.alamat}</p>
                 <p><b>Nomor Pendaftaran:</b> <span class="font-semibold">${d.nomor_pendaftaran}</span></p>
               </div>
