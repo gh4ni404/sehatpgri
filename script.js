@@ -1,5 +1,5 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFwJo0NgeDlRv0C8hz3LJGQP1hx-XrTWH5Ln7ATklUQAnOhNFJRoG0RUDwlwvueDBDGA/exec";
-
+// const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFwJo0NgeDlRv0C8hz3LJGQP1hx-XrTWH5Ln7ATklUQAnOhNFJRoG0RUDwlwvueDBDGA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeyMslfLamw3n1tULtwn3PNCQuQapHN130iJQOua9Ofh8D467SYM-5mAptdJWTQ6fR/exec";
 const form = document.getElementById("formPendaftaran");
 const nikError = document.getElementById('nik-error');
 const nikSuccess = document.getElementById('nik-success');
