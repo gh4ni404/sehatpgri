@@ -12,25 +12,23 @@
   <link rel="apple-touch-icon" href="assets/images/3ef23f566dd3c0cdeebc7a98a1f8643a.png" sizes="180x180" />
 </head>
 
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col antialiased">
   <!-- Navbar -->
-  <nav id="stickyNav" class="sticky-nav">
-    <div class="flex items-center justify-between px-4 py-3 bg-gray-100">
-      <div class="flex items-center space-x-2">
-        <span class="text-green-700 text-xl">
-          <img src="assets/images/3ef23f566dd3c0cdeebc7a98a1f8643a.png" alt="Logo PGRI" width="30" />
-        </span>
-        <span class="text-green-700 font-semibold text-lg flex items-center">SEHAT PGRI</span>
+  <nav id="stickyNav" class="sticky-nav bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+      <div class="flex items-center space-x-2.5">
+        <img src="assets/images/3ef23f566dd3c0cdeebc7a98a1f8643a.png" alt="Logo PGRI" class="w-7 h-7 object-contain" />
+        <span class="text-green-700 font-semibold text-base sm:text-lg tracking-tight">SEHAT PGRI</span>
       </div>
 
       <div class="flex items-center space-x-2">
         <button id="btnPendaftaran"
-          class="bg-green-600 text-white font-medium px-4 py-2 rounded-md hover:bg-green-400 transition-colors duration-150">
+          class="bg-green-600 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 rounded-lg hover:opacity-90 transition duration-150 whitespace-nowrap">
           📝 Daftar Baru
         </button>
 
         <button id="btnCekNik"
-          class="bg-white text-green-700 font-medium px-4 py-2 rounded-md border border-green-600 hover:bg-green-400 transition-colors duration-150">
+          class="bg-white text-green-700 text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 rounded-lg border border-green-600 hover:opacity-90 transition duration-150 whitespace-nowrap">
           🔍 Cek NIK
         </button>
       </div>
@@ -38,45 +36,49 @@
   </nav>
 
   <!-- Main Content -->
-  <main class="flex-1 max-w-6xl mx-auto px-4 py-4 main-content">
-    <section id="formRegistrasi" class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div class="md:col-span-6 bg-white rounded-lg border shadow-sm">
+  <main class="flex-1 w-full max-w-5xl mx-auto px-4 py-6 sm:py-8 flex items-center main-content">
+    <section id="formRegistrasi" class="w-full grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+      <div class="md:col-span-6 bg-white rounded-2xl border border-gray-200/80 shadow-sm p-2.5 sm:p-3 flex">
         <div id="drop-area"
-          class="h-full rounded-lg border-gray-200 flex flex-col items-center justify-center bg-white checker">
+          class="w-full h-full rounded-xl overflow-hidden flex flex-col items-center justify-center bg-gray-50 checker">
           <!-- Poster / Banner Event -->
           <img src="assets/images/banner-sehat-2026.jpeg" alt="[ Area Gambar / Banner Event ]" id="poster-img"
-            class="rounded-lg shadow">
+            class="w-full h-auto max-h-[580px] object-contain rounded-lg">
           <!-- Event Not Ready yet! -->
         </div>
       </div>
-      <div class="md:col-span-5">
-        <div class="bg-white px-6 py-4 rounded-lg border shadow-sm">
-          <h1 class="text-2xl font-bold text-center">JALAN SEHAT PGRI BONE BERAMAL 2026</h1>
-          <h2 class="text-2xl font-semibold text-center">Formulir Pendaftaran Peserta</h2>
-          <p class="text-sm text-gray-500 text-center mb-4">Silahkan lengkapi data diri Anda untuk mendaftar.</p>
+      <div class="md:col-span-6 flex">
+        <div class="w-full h-full bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/80 shadow-sm flex flex-col justify-center">
+          <div class="text-center mb-5">
+            <p class="text-[11px] font-semibold tracking-wider uppercase text-green-700 bg-green-50 border border-green-100 inline-block px-3 py-1 rounded-full mb-2">
+              Jalan Sehat PGRI Bone Beramal 2026
+            </p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Formulir Pendaftaran Peserta</h1>
+            <p class="text-xs sm:text-sm text-gray-500 mt-1">Silakan lengkapi data diri Anda untuk mendaftar.</p>
+          </div>
 
           <form id="formPendaftaran" class="space-y-4">
             <div>
-              <label class="text-sm text-gray-600">NIK (Nomor Induk Kependudukan) <span
+              <label for="nik" class="block text-xs font-medium text-gray-600 mb-1">NIK (Nomor Induk Kependudukan) <span
                   class="text-red-500">*</span></label>
               <input type="text" id="nik" name="nik" placeholder="16 digit NIK" maxlength="16" pattern="[0-9]*"
-                class="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                 inputmode="numeric" required>
               <div class="error-message" id="nik-error">NIK sudah terdaftar!</div>
               <div class="success-message" id="nik-success">NIK tersedia</div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label class="text-sm text-gray-600">Nama Lengkap <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+              <div class="sm:col-span-7">
+                <label for="nama" class="block text-xs font-medium text-gray-600 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
                 <input type="text" id="nama" name="nama"
-                  class="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Masukkan Nama" required>
+                  class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                  placeholder="Masukkan Nama Lengkap" required>
               </div>
-              <div>
-                <label class="text-sm text-gray-600">Kategori Peserta <span class="text-red-500">*</span></label>
+              <div class="sm:col-span-5">
+                <label for="kategori" class="block text-xs font-medium text-gray-600 mb-1">Kategori Peserta <span class="text-red-500">*</span></label>
                 <select id="kategori"
-                  class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none transition-all"
+                  class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none transition"
                   disabled>
                   <!-- <option value="" disabled>-- Pilih Kategori --</option> -->
                   <option value="Guru/Dosen" selected>Guru/Dosen</option>
@@ -87,66 +89,68 @@
                 <input type="hidden" name="kategori" value="Guru/Dosen">
               </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="relative" id="instansi-wrapper">
-                <!-- <label class="text-sm text-gray-600">Instansi/Sekolah/Kampus</label> -->
-                <label for="instansi" class="text-sm text-gray-600">Asal Sekolah <span class="text-red-500">*</span></label>
-                <div class="relative">
-                  <input type="text" id="instansi" name="instansi" autocomplete="off"
-                    class="mt-1 w-full border rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Pilih atau ketik asal sekolah" required>
-                  <button type="button" id="instansi-toggle" aria-label="Tampilkan daftar sekolah"
-                    class="absolute inset-y-0 right-0 mt-1 px-2.5 flex items-center text-gray-400 hover:text-gray-600">
-                    ▾
-                  </button>
-                </div>
-                <ul id="instansi-dropdown"
-                  class="hidden absolute z-30 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg text-sm">
-                </ul>
+
+            <div class="relative" id="instansi-wrapper">
+              <!-- <label class="text-sm text-gray-600">Instansi/Sekolah/Kampus</label> -->
+              <label for="instansi" class="block text-xs font-medium text-gray-600 mb-1">Asal Sekolah <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <input type="text" id="instansi" name="instansi" autocomplete="off"
+                  class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                  placeholder="Pilih atau ketik asal sekolah" required>
+                <button type="button" id="instansi-toggle" aria-label="Tampilkan daftar sekolah"
+                  class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600">
+                  ▾
+                </button>
+              </div>
+              <ul id="instansi-dropdown"
+                class="hidden absolute z-30 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg text-sm">
+              </ul>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="telepon" class="block text-xs font-medium text-gray-600 mb-1">Nomor Whatsapp <span class="text-red-500">*</span></label>
+                <input type="tel" id="telepon" name="telepon"
+                  class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                  placeholder="08xxxxxxxxxx" required>
               </div>
               <div>
-                <label class="text-sm text-gray-600">Nomor Whatsapp <span class="text-red-500">*</span></label>
-                <input type="tel" id="telepon" name="telepon"
-                  class="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Masukkan Nomor WA" required>
+                <label for="kecamatan" class="block text-xs font-medium text-gray-600 mb-1">Cabang PGRI <span
+                    class="text-red-500">*</span></label>
+                <select name="kecamatan" id="kecamatan"
+                  class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                  required>
+                  <option value="" disabled selected>-- Pilih Cabang PGRI --</option>
+                  <option value="Ajangale">Ajangale</option>
+                  <option value="Amali">Amali</option>
+                  <option value="Awangpone">Awangpone</option>
+                  <option value="Barebbo">Barebbo</option>
+                  <option value="Bengo">Bengo</option>
+                  <option value="Bontocani">Bontocani</option>
+                  <option value="Cenrana">Cenrana</option>
+                  <option value="Cina">Cina</option>
+                  <option value="Dua Boccoe">Dua Boccoe</option>
+                  <option value="Kahu">Kahu</option>
+                  <option value="Kajuara">Kajuara</option>
+                  <option value="Lamuru">Lamuru</option>
+                  <option value="Lappariaja">Lappariaja</option>
+                  <option value="Libureng">Libureng</option>
+                  <option value="Mare">Mare</option>
+                  <option value="Palakka">Palakka</option>
+                  <option value="Patimpeng">Patimpeng</option>
+                  <option value="Ponre">Ponre</option>
+                  <option value="Salomekko">Salomekko</option>
+                  <option value="Sibulue">Sibulue</option>
+                  <option value="Tanete Riattang">Tanete Riattang</option>
+                  <option value="Tanete Riattang Barat">Tanete Riattang Barat</option>
+                  <option value="Tanete Riattang Timur">Tanete Riattang Timur</option>
+                  <option value="Tellu Limpoe">Tellu Limpoe</option>
+                  <option value="Tellu Siattinge">Tellu Siattinge</option>
+                  <option value="Tonra">Tonra</option>
+                  <option value="Ulaweng">Ulaweng</option>
+                </select>
+                <div class="error-message" id="kecamatan-error">Silakan pilih kecamatan terlebih dahulu.</div>
               </div>
-            </div>
-            <div>
-              <label for="kecamatan" class="text-sm text-gray-600">Cabang PGRI <span
-                  class="text-red-500">*</span></label>
-              <select name="kecamatan" id="kecamatan"
-                class="mt-1 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                required>
-                <option value="" disabled selected>-- Pilih Cabang PGRI --</option>
-                <option value="Ajangale">Ajangale</option>
-                <option value="Amali">Amali</option>
-                <option value="Awangpone">Awangpone</option>
-                <option value="Barebbo">Barebbo</option>
-                <option value="Bengo">Bengo</option>
-                <option value="Bontocani">Bontocani</option>
-                <option value="Cenrana">Cenrana</option>
-                <option value="Cina">Cina</option>
-                <option value="Dua Boccoe">Dua Boccoe</option>
-                <option value="Kahu">Kahu</option>
-                <option value="Kajuara">Kajuara</option>
-                <option value="Lamuru">Lamuru</option>
-                <option value="Lappariaja">Lappariaja</option>
-                <option value="Libureng">Libureng</option>
-                <option value="Mare">Mare</option>
-                <option value="Palakka">Palakka</option>
-                <option value="Patimpeng">Patimpeng</option>
-                <option value="Ponre">Ponre</option>
-                <option value="Salomekko">Salomekko</option>
-                <option value="Sibulue">Sibulue</option>
-                <option value="Tanete Riattang">Tanete Riattang</option>
-                <option value="Tanete Riattang Barat">Tanete Riattang Barat</option>
-                <option value="Tanete Riattang Timur">Tanete Riattang Timur</option>
-                <option value="Tellu Limpoe">Tellu Limpoe</option>
-                <option value="Tellu Siattinge">Tellu Siattinge</option>
-                <option value="Tonra">Tonra</option>
-                <option value="Ulaweng">Ulaweng</option>
-              </select>
-              <div class="error-message" id="kecamatan-error">Silakan pilih kecamatan terlebih dahulu.</div>
             </div>
             <!-- <div>
               <label class="block text-gray-700 font-medium">Alamat <span class="text-red-500">*</span></label>
@@ -157,15 +161,15 @@
 
             <!-- Tombol Kirim -->
             <button type="submit" id="submitBtn"
-              class="w-full text-white py-3 rounded-lg font-semibold transition btn-submit">
+              class="w-full text-white py-2.5 rounded-lg text-sm font-semibold transition btn-submit">
               Kirim Pendaftaran
             </button>
 
             <!-- Status Indicator -->
-            <div class="flex justify-center items-center space-x-2 mt-3">
+            <div class="flex justify-center items-center">
               <div class="loading hidden" id="loading">
                 <div class="spinner"></div>
-                <p>Memverifikasi Data . . .</p>
+                <p class="text-xs text-gray-500 mt-1">Memverifikasi Data . . .</p>
               </div>
             </div>
           </form>
@@ -178,19 +182,20 @@
       </div>
     </section>
 
-    <section id="formCekNik" class="hidden">
-      <div class="bg-white p-6 rounded-lg border shadow-sm max-w-md mx-auto">
-        <h2 class="text-2xl font-semibold text-center mb-4">Cek NIK Peserta</h2>
+    <section id="formCekNik" class="hidden w-full">
+      <div class="bg-white p-6 sm:p-7 rounded-2xl border border-gray-200/80 shadow-sm max-w-md mx-auto">
+        <h2 class="text-xl font-bold text-center text-gray-900 mb-1">Cek NIK Peserta</h2>
+        <p class="text-xs sm:text-sm text-gray-500 text-center mb-5">Masukkan 16 digit NIK untuk melihat status pendaftaran.</p>
         <input id="search-nik" name="search-nik" type="text" placeholder="Masukkan NIK Anda"
-          class="w-full border rounded px-3 py-2 mb-4">
-        <button id="btn-search" class="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700">Cek Sekarang</button>
+          class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition">
+        <button id="btn-search" class="w-full py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition">Cek Sekarang</button>
 
-        <div id="result" class="mt-6 text-center text-gray-600"></div>
+        <div id="result" class="mt-5 text-center text-gray-600"></div>
       </div>
     </section>
   </main>
   <!-- Footer -->
-  <footer class="text-center text-white-500 mt-5 pb-4 text-sm">
+  <footer class="text-center text-gray-400 py-5 text-xs sm:text-sm">
     © 2025 DKV SMKN 8 Bone – All Rights Reserved.
   </footer>
   <script src="script.js"></script>
