@@ -5,10 +5,13 @@ const CONFIG = {
   SHEET_NAME: 'tb_reg_sehat',
   QUEUE_SHEET: 'whatsapp_queue',
   FONNTE_TOKEN: 'AZ1qn13Yayin98G7Pysa',
-  EVENT_NAME: 'Jalan Sehat PGRI Bone 2025',
-  EVENT_DATE: 'Ahad, 23 November 2025',
+  // EVENT_NAME: 'Jalan Sehat PGRI Bone 2025',
+  EVENT_NAME: 'Jalan Sehat PGRI Bone Beramal 2026',
+  // EVENT_DATE: 'Ahad, 23 November 2025',
+  EVENT_DATE: 'Ahad, 29 November 2025',
   EVENT_TIME: '06.00 WITA',
-  EVENT_LOCATION: 'Lapangan Merdeka Watampone',
+  // EVENT_LOCATION: 'Lapangan Merdeka Watampone',
+  EVENT_LOCATION: 'Lapangan Sepak Bola Mappesangka Bakunge',
   BATCH_SIZE: 30,
   DELAY_MINUTES: 10, // Delay 10 menit untuk pengiriman WhatsApp setelah pendaftaran
   INTER_USER_DELAY_MINUTES: 4 // Delay 5 menit antar pengiriman ke user berbeda
